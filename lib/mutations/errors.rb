@@ -46,10 +46,23 @@ module Mutations
     # options:
     #  :index -- index of error if it's in an array
     def message(key, error_symbol, options = {})
-      if options[:index]
-        "#{(key || 'array').to_s.titleize}[#{options[:index]}] #{MESSAGES[error_symbol]}"
+      MessageBuilder.new(*args).message_body
+    end
+  end
+
+  class ErrorMessagesBuilder
+    def initialize(key, error_symbol, options = {})
+      options[:title_formatter] = :titleize_key unless options[:title_formatter]
+      @key = key
+      @error_symbol = error_symbol
+      @options = options
+    end
+
+    def message_body
+      if @options[:index]
+        "#{(@key || 'array').to_s.titleize}[#{@options[:index]}] #{MESSAGES[@error_symbol]}"
       else
-        "#{key.to_s.titleize} #{MESSAGES[error_symbol]}"
+        "#{@key.to_s.titleize} #{MESSAGES[@error_symbol]}"
       end
     end
   end
@@ -67,6 +80,7 @@ module Mutations
       @symbol = error_symbol
       @message = options[:message]
       @index = options[:index]
+      @error_key_formatter = options[:error_key_formatter]
     end
 
     def symbolic

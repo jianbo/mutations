@@ -114,7 +114,8 @@ module Mutations
               data.delete(key)
             else
               error_key = filterer.options[:error_key] || key
-              sub_error = ErrorAtom.new(error_key, sub_error) if sub_error.is_a?(Symbol)
+              error_key_formatter = filter.options[:error_key_formatter]
+              sub_error = ErrorAtom.new(error_key, sub_error, error_key_formatter) if sub_error.is_a?(Symbol)
               errors[key] = sub_error
             end
           end
@@ -124,7 +125,8 @@ module Mutations
               filtered_data[key] = filterer.default
             elsif is_required
               error_key = filterer.options[:error_key] || key
-              errors[key] = ErrorAtom.new(error_key, :required)
+              error_key_formatter = filter.options[:error_key_formatter]
+              errors[key] = ErrorAtom.new(error_key, :required, error_key_formatter)
             end
           end
         end
